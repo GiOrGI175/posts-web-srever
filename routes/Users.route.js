@@ -21,20 +21,30 @@ router.post('/register', async (req, res) => {
   res.json('SUCCESS');
 });
 
-router.post('/login', validation, async (req, res) => {
+router.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
-  const user = Users.findOne({ where: { username: username } });
+  const user = await Users.findOne({ where: { username } });
 
-  if (!username) res.json({ error: 'user dont exist' });
+  if (!user) {
+    return res.json({ error: "User doesn't exist" });
+  }
 
   bcrypt.compare(password, user.password).then((match) => {
-    if (!match) res.json({ error: 'wrong username or password combination' });
+    if (!match) {
+      return res.json({ error: 'Wrong username or password' });
+    }
 
-    const accesToekn = sign({ username: user.username, id }, 'importantsecret');
+    const accessToken = sign(
+      { username: user.username, id: user.id },
+      'importantsecret',
+    );
 
-    res.json(accesToekn);
+    res.json(accessToken);
+  });
+
+  router.get('/auth', validation, async (req, res) => {
+    res.json(req.user);
   });
 });
-
 module.exports = router;

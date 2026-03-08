@@ -5,12 +5,14 @@ const db = require('./models');
 const postRouter = require('./routes/Posts.route');
 const commentsRouter = require('./routes/Commnts.route');
 const UserRouter = require('./routes/Users.route');
+const LikesRouter = require('./routes/Likes.route');
 
 app.use(express.json());
 
 app.use('/posts', postRouter);
 app.use('/comments', commentsRouter);
 app.use('/auth', UserRouter);
+app.use('/Likes', LikesRouter);
 
 db.sequelize.sync().then(() => {
   app.listen(3001, () => {
